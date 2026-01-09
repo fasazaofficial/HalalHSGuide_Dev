@@ -71,7 +71,7 @@ body.dark-mode {
     content: "";
     position: absolute;
     bottom: 100%;
-    right: 14px;
+    right: 12px;
     border-width: 6px;
     border-style: solid;
     border-color: transparent transparent var(--tooltip-bg) transparent;
@@ -93,7 +93,7 @@ body.dark-mode {
     }
 
     .tooltip-text::after {
-        right: 74px;
+        right: 72px;
         /* Adjust arrow to align with icon after container shift */
     }
 }
