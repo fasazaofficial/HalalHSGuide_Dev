@@ -291,6 +291,20 @@ body {
     font-weight: 500;
 }
 
+/* Form Container */
+.form-container {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    animation: slideUp 0.4s ease-out forwards;
+}
+
+.form-container iframe {
+    border-radius: 8px;
+    min-height: 1200px;
+}
+
 /* Data Grid */
 .data-grid {
     display: grid;

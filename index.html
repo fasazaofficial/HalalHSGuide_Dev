@@ -33,6 +33,7 @@
                 <button class="tab-btn" data-tab="butchers">Butchers</button>
                 <button class="tab-btn" data-tab="suppliers">Meat Suppliers</button>
                 <button class="tab-btn" data-tab="general">General Foods</button>
+                <button class="tab-btn" data-tab="submit">Contact Us</button>
             </nav>
         </header>
 
@@ -51,6 +52,14 @@
             <div id="errorState" class="state-view hidden">
                 <i data-lucide="alert-circle"></i>
                 <p>Failed to load data. Please check your connection.</p>
+            </div>
+
+            <div id="formContainer" class="form-container hidden">
+                <iframe
+                    src="https://docs.google.com/forms/d/e/1FAIpQLSewyJv0zi5rsHr9NZPUJkqIChlvUBWdYsTd7Yi3fZUWb9XPkA/viewform?embedded=true"
+                    width="100%" height="1200" frameborder="0" marginheight="0" marginwidth="0">
+                    Loading…
+                </iframe>
             </div>
 
             <div id="dataList" class="data-grid">

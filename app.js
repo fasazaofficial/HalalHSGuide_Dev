@@ -26,7 +26,8 @@ const elements = {
     loading: document.getElementById('loadingState'),
     error: document.getElementById('errorState'),
     search: document.getElementById('searchInput'),
-    searchStats: document.getElementById('searchStats')
+    searchStats: document.getElementById('searchStats'),
+    formContainer: document.getElementById('formContainer')
 };
 
 // Initialize
@@ -107,6 +108,23 @@ function setupSearch() {
 // Data Fetching
 async function loadTab(tabKey) {
     STATE.currentTab = tabKey;
+
+    // Special handling for Submit Entry tab
+    if (tabKey === 'submit') {
+        elements.loading.classList.add('hidden');
+        elements.error.classList.add('hidden');
+        elements.dataList.classList.add('hidden');
+        elements.searchStats.classList.add('hidden');
+        elements.formContainer.classList.remove('hidden');
+        elements.search.parentElement.classList.add('hidden'); // Hide search bar
+        return;
+    }
+
+    // Hide form container for data tabs
+    elements.formContainer.classList.add('hidden');
+    elements.dataList.classList.remove('hidden');
+    elements.search.parentElement.classList.remove('hidden'); // Show search bar
+
     showLoading();
 
     // Check cache first
