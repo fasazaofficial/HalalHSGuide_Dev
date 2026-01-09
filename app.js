@@ -361,12 +361,12 @@ function createCard(item) {
             <div class="item-header">
                 <h3 class="item-name">${name}</h3>
                 <div class="status-wrapper">
+                    <span class="${statusClass}">${status}</span>
                     ${statusDesc ? `
                     <div class="info-icon" onclick="toggleTooltip(this)">
                         <i data-lucide="info"></i>
                         <div class="tooltip-text">${statusDesc}</div>
                     </div>` : ''}
-                    <span class="${statusClass}">${status}</span>
                 </div>
             </div>
             <div class="item-meta">

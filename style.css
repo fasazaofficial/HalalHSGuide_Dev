@@ -52,10 +52,11 @@ body.dark-mode {
     position: absolute;
     z-index: 100;
     top: 100%;
-    right: -10px;
+    left: 50%;
+    transform: translateX(-50%);
     margin-top: 8px;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, transform 0.2s;
     font-size: 0.85rem;
     line-height: 1.4;
     font-weight: 500;
@@ -71,7 +72,8 @@ body.dark-mode {
     content: "";
     position: absolute;
     bottom: 100%;
-    right: 12px;
+    left: 50%;
+    transform: translateX(-50%);
     border-width: 6px;
     border-style: solid;
     border-color: transparent transparent var(--tooltip-bg) transparent;
@@ -80,21 +82,15 @@ body.dark-mode {
 .tooltip-text.active {
     visibility: visible;
     opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 @media (max-width: 480px) {
     .tooltip-text {
         width: 220px;
         /* Smaller width for mobile */
-        right: -70px;
-        /* Shift right to prevent left cutoff */
         font-size: 0.8rem;
         /* Slightly smaller text */
-    }
-
-    .tooltip-text::after {
-        right: 72px;
-        /* Adjust arrow to align with icon after container shift */
     }
 }
 
@@ -347,8 +343,9 @@ body {
 
 .item-header {
     display: flex;
-    justify-content: space-between;
-    align-items: start;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
     margin-bottom: 12px;
 }
 
@@ -403,7 +400,7 @@ body {
     padding: 4px 8px;
     border-radius: 6px;
     font-weight: 600;
-    text-transform: uppercase;
+    /*text-transform: uppercase;*/
 }
 
 .status-verified {
@@ -420,7 +417,7 @@ body {
 
 .status-confirmed {
     background: rgba(56, 189, 248, 0.1);
-    color: #38bdf8;
+    color: #1883b3;
     /* Light Blue */
     border: 1px solid rgba(56, 189, 248, 0.2);
 }
