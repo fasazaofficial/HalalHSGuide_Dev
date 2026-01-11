@@ -309,6 +309,41 @@ body {
     min-height: 800px;
 }
 
+.readme-content {
+    line-height: 1.8;
+    color: var(--text-primary);
+}
+
+.readme-content h1 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: var(--accent);
+}
+
+.readme-content h2 {
+    margin: 30px 0 15px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid var(--accent-glow);
+    padding-bottom: 5px;
+}
+
+.readme-content p {
+    margin-bottom: 15px;
+}
+
+.readme-content strong {
+    color: var(--accent);
+}
+
+.readme-content a {
+    text-decoration: underline;
+}
+
+.readme-content em {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
 /* Data Grid */
 .data-grid {
     display: grid;

@@ -28,7 +28,8 @@ const elements = {
     search: document.getElementById('searchInput'),
     searchStats: document.getElementById('searchStats'),
     formContainer: document.getElementById('formContainer'),
-    mapContainer: document.getElementById('mapContainer')
+    mapContainer: document.getElementById('mapContainer'),
+    readmeContainer: document.getElementById('readmeContainer')
 };
 
 // Initialize
@@ -89,6 +90,8 @@ function setupTabs() {
     });
 }
 
+let searchTimeout;
+
 function setupSearch() {
     elements.search.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
@@ -100,6 +103,18 @@ function setupSearch() {
             elements.searchStats.classList.remove('hidden');
             const count = filtered.length;
             elements.searchStats.textContent = `${count} result${count !== 1 ? 's' : ''} found`;
+
+            // Track search in Google Analytics (debounced 1s)
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (window.gtag && query.length >= 3) {
+                    gtag('event', 'search', {
+                        'search_term': query,
+                        'tab_name': STATE.currentTab,
+                        'results_count': count
+                    });
+                }
+            }, 1000);
         } else {
             elements.searchStats.classList.add('hidden');
         }
@@ -109,6 +124,13 @@ function setupSearch() {
 // Data Fetching
 async function loadTab(tabKey) {
     STATE.currentTab = tabKey;
+
+    // Track tab view in Google Analytics
+    if (window.gtag) {
+        gtag('event', 'tab_view', {
+            'tab_name': tabKey
+        });
+    }
 
     // Special handling for Map tab
     if (tabKey === 'map') {
@@ -122,6 +144,19 @@ async function loadTab(tabKey) {
         return;
     }
 
+    // Special handling for Readme tab
+    if (tabKey === 'readme') {
+        elements.loading.classList.add('hidden');
+        elements.error.classList.add('hidden');
+        elements.dataList.classList.add('hidden');
+        elements.searchStats.classList.add('hidden');
+        elements.formContainer.classList.add('hidden');
+        elements.mapContainer.classList.add('hidden');
+        elements.readmeContainer.classList.remove('hidden');
+        elements.search.parentElement.classList.add('hidden'); // Hide search bar
+        return;
+    }
+
     // Special handling for Submit Entry tab
     if (tabKey === 'submit') {
         elements.loading.classList.add('hidden');
@@ -130,6 +165,7 @@ async function loadTab(tabKey) {
         elements.searchStats.classList.add('hidden');
         elements.formContainer.classList.remove('hidden');
         elements.mapContainer.classList.add('hidden');
+        elements.readmeContainer.classList.add('hidden');
         elements.search.parentElement.classList.add('hidden'); // Hide search bar
         return;
     }
@@ -137,6 +173,7 @@ async function loadTab(tabKey) {
     // Hide special containers for data tabs
     elements.formContainer.classList.add('hidden');
     elements.mapContainer.classList.add('hidden');
+    elements.readmeContainer.classList.add('hidden');
     elements.dataList.classList.remove('hidden');
     elements.search.parentElement.classList.remove('hidden'); // Show search bar
 
