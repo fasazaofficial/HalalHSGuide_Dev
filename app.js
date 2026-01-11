@@ -27,7 +27,8 @@ const elements = {
     error: document.getElementById('errorState'),
     search: document.getElementById('searchInput'),
     searchStats: document.getElementById('searchStats'),
-    formContainer: document.getElementById('formContainer')
+    formContainer: document.getElementById('formContainer'),
+    mapContainer: document.getElementById('mapContainer')
 };
 
 // Initialize
@@ -109,6 +110,18 @@ function setupSearch() {
 async function loadTab(tabKey) {
     STATE.currentTab = tabKey;
 
+    // Special handling for Map tab
+    if (tabKey === 'map') {
+        elements.loading.classList.add('hidden');
+        elements.error.classList.add('hidden');
+        elements.dataList.classList.add('hidden');
+        elements.searchStats.classList.add('hidden');
+        elements.formContainer.classList.add('hidden');
+        elements.mapContainer.classList.remove('hidden');
+        elements.search.parentElement.classList.add('hidden'); // Hide search bar
+        return;
+    }
+
     // Special handling for Submit Entry tab
     if (tabKey === 'submit') {
         elements.loading.classList.add('hidden');
@@ -116,12 +129,14 @@ async function loadTab(tabKey) {
         elements.dataList.classList.add('hidden');
         elements.searchStats.classList.add('hidden');
         elements.formContainer.classList.remove('hidden');
+        elements.mapContainer.classList.add('hidden');
         elements.search.parentElement.classList.add('hidden'); // Hide search bar
         return;
     }
 
-    // Hide form container for data tabs
+    // Hide special containers for data tabs
     elements.formContainer.classList.add('hidden');
+    elements.mapContainer.classList.add('hidden');
     elements.dataList.classList.remove('hidden');
     elements.search.parentElement.classList.remove('hidden'); // Show search bar
 
