@@ -39,7 +39,7 @@
             <nav class="tab-nav">
                 <button class="tab-btn active" data-tab="restaurants">Restaurants</button>
                 <button class="tab-btn" data-tab="butchers">Butchers</button>
-                <button class="tab-btn" data-tab="suppliers">Meat Suppliers</button>
+                <button class="tab-btn" data-tab="suppliers">Big Suppliers</button>
                 <button class="tab-btn" data-tab="general">General Foods</button>
                 <button class="tab-btn" data-tab="map">Map View</button>
                 <button class="tab-btn" data-tab="readme">Readme</button>
@@ -52,6 +52,7 @@
                 <i data-lucide="search"></i>
                 <input type="text" id="searchInput" placeholder="Search for names, locations, brands...">
             </div>
+            <div id="searchHint" class="search-hint hidden">For nearby search, enter exact suburb name.</div>
             <div id="searchStats" class="search-stats hidden"></div>
 
             <div id="loadingState" class="state-view">
@@ -204,6 +205,7 @@
         </svg>
     </a>
 
+    <script src="locations.js"></script>
     <script src="app.js"></script>
     <script>
         lucide.createIcons();
