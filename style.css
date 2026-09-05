@@ -432,19 +432,25 @@ body {
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
-    background: var(--accent-glow);
-    color: var(--accent);
+    background: #f3e8ff;
+    color: #7e22ce;
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 8px;
-    border: 1px solid rgba(37, 211, 102, 0.1);
+    border: 1px solid #e9d5ff;
     align-self: flex-start;
 }
 
 .nearby-badge svg {
     width: 14px;
     height: 14px;
+}
+
+body.dark-mode .nearby-badge {
+    background: rgba(168, 85, 247, 0.15);
+    color: #d8b4fe;
+    border-color: rgba(192, 132, 252, 0.3);
 }
 
 .meta-row {
