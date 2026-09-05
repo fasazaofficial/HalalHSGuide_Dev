@@ -197,7 +197,7 @@ async function loadTab(tabKey) {
 
     showLoading();
 
-    // Check cache first
+    // Check session cache first (prevents spinner on quick tab switching within same session)
     if (STATE.cache[tabKey]) {
         STATE.data = STATE.cache[tabKey];
         renderData(STATE.data);
@@ -205,72 +205,75 @@ async function loadTab(tabKey) {
     }
 
     const gid = CONFIG.tabs[tabKey].gid;
-    const directUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.sheetId}/export?format=csv&gid=${gid}`;
 
-    // Attempt fetch with fallback proxies
-    fetchWithProxy(directUrl, (data) => {
-        // Success callback
-        processData(data, tabKey);
-    }, () => {
-        // Failure callback
-        showError();
+    // Fetch live data directly from Google Sheets (no static files, always real-time)
+    fetchSheetData(gid, (rows) => {
+        processData(rows, tabKey);
+    }, (err) => {
+        showError(err);
     });
 }
 
-function fetchWithProxy(targetUrl, onSuccess, onFailure) {
-    // List of proxies to try in order
-    // Note: AllOrigins raw is usually most reliable for simple text
-    const proxies = [
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-        `https://thingproxy.freeboard.io/fetch/${targetUrl}`
-    ];
+function fetchSheetData(gid, onSuccess, onFailure) {
+    const callbackName = 'gvizCallback_' + Math.floor(Math.random() * 1000000);
+    const script = document.createElement('script');
+    let completed = false;
 
-    let attempt = 0;
-
-    function tryNext() {
-        if (attempt >= proxies.length) {
-            console.error('All proxies failed');
-            onFailure();
-            return;
+    const timeoutId = setTimeout(() => {
+        if (!completed) {
+            completed = true;
+            cleanup();
+            onFailure('Connection to Google Sheets timed out.');
         }
+    }, 10000);
 
-        const url = proxies[attempt];
-        attempt++;
-
-        // Use fetch with a timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 sec timeout per proxy
-
-        fetch(url, { signal: controller.signal })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.text();
-            })
-            .then(csvText => {
-                clearTimeout(timeoutId);
-                // Parse the CSV text
-                Papa.parse(csvText, {
-                    header: false,
-                    skipEmptyLines: true,
-                    complete: (results) => {
-                        if (results.data && results.data.length > 0) {
-                            onSuccess(results.data);
-                        } else {
-                            throw new Error('Empty data'); // Trigger next proxy
-                        }
-                    },
-                    error: (e) => { throw e; }
-                });
-            })
-            .catch(err => {
-                clearTimeout(timeoutId);
-                console.warn(`Proxy ${attempt} (${url}) failed:`, err);
-                tryNext();
-            });
+    function cleanup() {
+        clearTimeout(timeoutId);
+        try {
+            delete window[callbackName];
+        } catch (e) {
+            window[callbackName] = undefined;
+        }
+        if (script.parentNode) {
+            script.parentNode.removeChild(script);
+        }
     }
 
-    tryNext();
+    window[callbackName] = function (json) {
+        if (completed) return;
+        completed = true;
+        cleanup();
+        try {
+            if (json && json.table && json.table.rows) {
+                const rows = json.table.rows.map(r => {
+                    if (!r || !r.c) return [];
+                    return r.c.map(cell => {
+                        if (!cell) return '';
+                        if (cell.f !== undefined && cell.f !== null) return cell.f;
+                        if (cell.v !== undefined && cell.v !== null) return String(cell.v);
+                        return '';
+                    });
+                });
+                onSuccess(rows);
+            } else {
+                onFailure('Invalid response from Google Sheets.');
+            }
+        } catch (err) {
+            console.error('Error processing live sheet data:', err);
+            onFailure(err.message);
+        }
+    };
+
+    script.onerror = function () {
+        if (completed) return;
+        completed = true;
+        cleanup();
+        onFailure('Could not reach Google Sheets. Please check your connection.');
+    };
+
+    // Real-time live Google Sheets Visualization API with cache-busting timestamp
+    script.src = `https://docs.google.com/spreadsheets/d/${CONFIG.sheetId}/gviz/tq?gid=${gid}&headers=0&tqx=responseHandler:${callbackName}&_t=${Date.now()}`;
+    document.head.appendChild(script);
 }
 
 function processData(rows, tabKey) {
@@ -640,7 +643,8 @@ function showLoading() {
     elements.dataList.innerHTML = '';
 }
 
-function showError() {
+function showError(detail) {
+    if (detail) console.error('Error loading data:', detail);
     elements.loading.classList.add('hidden');
     elements.error.classList.remove('hidden');
 }
